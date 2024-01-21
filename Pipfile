@@ -11,6 +11,7 @@ yfinance = "*"
 pandas-datareader = "*"
 scipy = "*"
 matplotlib = "*"
+scikit-learn = "*"
 
 [dev-packages]
 

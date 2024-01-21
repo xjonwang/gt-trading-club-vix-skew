@@ -58,10 +58,8 @@ if __name__ == "__main__":
     svxy_kdes = []
     cnt = 0
     for group in svxy_vix_parametrized_returns:
-        #if (len(group) > 30):
-        print(cnt)
-        svxy_kdes.append(generate_kde(pd.Series(group), show_plot=True))
-        cnt+=1
+        if (len(group) > 30):
+            svxy_kdes.append(generate_kde(pd.Series(group), show_plot=True))
     svxy_pdf = pdf_creator(svxy_kdes[1], 79, 80.07)
     result, error = quad(svxy_pdf, -2, 2)
     print(result, error)
