@@ -7,6 +7,10 @@ name = "pypi"
 pandas = "*"
 numpy = "*"
 requests = "*"
+yfinance = "*"
+pandas-datareader = "*"
+scipy = "*"
+matplotlib = "*"
 
 [dev-packages]
 

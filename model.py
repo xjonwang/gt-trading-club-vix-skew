@@ -40,7 +40,7 @@ class Model:
         return pdf
     
     def call_theo(self, strike: float, spot: float) -> float:
-        pdf = self.call_df_creator(strike=strike, spot=spot)
+        pdf = self.call_pdf_creator(strike=strike, spot=spot)
         result, error = quad(pdf, -2, 2)
         if error > 1e-3:
             print(f"WARNING (call): error on integration > 1e-3 = {error}")
@@ -50,7 +50,7 @@ class Model:
         pdf = self.put_pdf_creator(strike=strike, spot=spot)
         result, error = quad(pdf, -2, 2)
         if error > 1e-3:
-            print(f"WARNING (put): error on integration > 1e-3 = {error}")
+            print(f"WARNING (put): error on integration {error} > 1e-3")
         return result
 
     # returns 1 for long, 0 for no signal, -1 for short
@@ -63,6 +63,7 @@ class Model:
         0 for no signal
         -1 for short
         """
+        print(f"strike: {strike}, spot: {spot}")
         if right == Right.CALL:
             theo = self.call_theo(strike=strike, spot=spot)
             return int(theo > ask) - int(theo < bid)
