@@ -8,8 +8,11 @@ import math
 from scipy.stats import gaussian_kde
 from scipy.integrate import quad
 import matplotlib.pyplot as plt
+
+import warnings
+warnings.filterwarnings("ignore")
     
-g_vix = pdr.get_data_yahoo(['^VIX'], dt.date(2000, 1, 1), dt.date.today())['Adj Close']
+g_vix = pdr.get_data_yahoo(['^VIX'], dt.date(2000, 1, 1), dt.date.today(), progress=False)['Adj Close']
 
 def query_option_chain(ticker: str) -> tuple:
     security = yf.Ticker(ticker)
@@ -38,26 +41,27 @@ def pdf_creator(kde: gaussian_kde, strike: float, spot: float):
 def vix_parametrize(data):
     start_date = data.index[0]
     vix = g_vix[start_date:]
-    min_vix = int(vix.min() // 8)
-    max_vix = int(vix.max() // 8 + 1)
-    vix_parametrized_returns = [[] for _ in range(max_vix - min_vix)]
+    vix_parametrized_returns = [[] for _ in range(6)]
     for i in range(1, data.size):
-        vix_parametrized_returns[int(vix[i] // 8) - min_vix].append(data[i])
+        vix_parametrized_returns[min(int(vix[i] // 8), 5)].append(data[i])
     return vix_parametrized_returns
 
 if __name__ == "__main__":
-    svix = pdr.get_data_yahoo(['SVIX'], dt.date(2020, 3, 30), dt.date.today())['Adj Close']
+    svix = pdr.get_data_yahoo(['SVIX'], dt.date(2020, 3, 30), dt.date.today(), progress=False)['Adj Close']
     svix_daily_returns = np.log(svix/svix.shift(1))
-    svxy = pdr.get_data_yahoo(['SVXY'], dt.date(2000, 1, 1), dt.date.today())['Adj Close']
+    svxy = pdr.get_data_yahoo(['SVXY'], dt.date(2000, 1, 1), dt.date.today(), progress=False)['Adj Close']
     svxy_daily_returns = np.log(svxy/svxy.shift(1))
     #generate_kde(svix_daily_returns, True)
     svix_vix_parametrized_returns = vix_parametrize(svix_daily_returns)
     svxy_kde = generate_kde(svxy_daily_returns)
     svxy_vix_parametrized_returns = vix_parametrize(svxy_daily_returns)
     svxy_kdes = []
+    cnt = 0
     for group in svxy_vix_parametrized_returns:
-        if (len(group) > 30):
-            svxy_kdes.append(generate_kde(pd.Series(group), show_plot=True))
+        #if (len(group) > 30):
+        print(cnt)
+        svxy_kdes.append(generate_kde(pd.Series(group), show_plot=True))
+        cnt+=1
     svxy_pdf = pdf_creator(svxy_kdes[1], 79, 80.07)
     result, error = quad(svxy_pdf, -2, 2)
     print(result, error)
