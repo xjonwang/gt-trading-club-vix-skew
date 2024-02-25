@@ -4,5 +4,6 @@ matplotlib
 pandas
 pandas_datareader
 requests
+scikit-learn
 scipy
 yfinance
